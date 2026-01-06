@@ -1,3 +1,4 @@
+import 'package:expensetracker/Screens/AddExpenseScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,11 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Expense Tracker With Local DataBase',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Placeholder(),
+      home: AddExpenseScreen(),
     );
   }
 }
