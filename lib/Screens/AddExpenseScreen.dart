@@ -189,7 +189,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       Divider(height: 20,color: Colors.grey.shade300,),
                       Row(
                         children: [
-                          
+                          Icon(Icons.edit)
                         ],
                       ),
                       Divider(height: 20,color: Colors.grey.shade300,),
