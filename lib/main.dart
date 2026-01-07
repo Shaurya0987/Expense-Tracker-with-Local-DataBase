@@ -1,5 +1,6 @@
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:expensetracker/Screens/AddExpenseScreen.dart';
+import 'package:expensetracker/Screens/DashBoard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: AddExpenseScreen(),
+      home: Dashboard(),
     );
   }
 }
