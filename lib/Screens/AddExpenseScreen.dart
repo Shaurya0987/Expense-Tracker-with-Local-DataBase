@@ -43,7 +43,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final categoryProvider = context.watch<Categoriesprovider>();
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.grey.shade200,
 
       appBar: AppBar(
         backgroundColor: Colors.grey.shade200,
