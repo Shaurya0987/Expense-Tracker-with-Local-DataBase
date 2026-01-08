@@ -1,3 +1,4 @@
+import 'package:expensetracker/Screens/SignInScreen.dart';
 import 'package:flutter/material.dart';
 
 class Loginscreen extends StatefulWidget {
@@ -119,22 +120,28 @@ class _LoginscreenState extends State<Loginscreen> {
             const Spacer(flex: 2),
 
             // 🔹 Bottom centered text
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Don't have an account? ",
-                  style: TextStyle(color: Colors.grey.shade700),
-                ),
-                Text(
-                  "Sign Up",
-                  style: TextStyle(
-                    color: Colors.blue.shade600,
-                    decoration: TextDecoration.underline,
-                    decorationThickness: 1.6,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>SignInScreen()));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(color: Colors.grey.shade700),
                   ),
-                ),
-              ],
+                  Text(
+                    "Sign Up",
+                    style: TextStyle(
+                      color: Colors.blue.shade600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.blue,
+                      decorationThickness: 1.6,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
