@@ -1,4 +1,5 @@
 import 'package:expensetracker/Providers/AuthProvider.dart';
+import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:expensetracker/Screens/BottomNavigationBar.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_)=>Categoriesprovider()),
     ChangeNotifierProvider(create: (_)=>Authprovider()),
+    ChangeNotifierProvider(create: (_)=>StorageProvider()),
   ],child: const MyApp(),));
 }
 

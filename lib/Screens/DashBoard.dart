@@ -1,161 +1,242 @@
 import 'package:expensetracker/Providers/AuthProvider.dart';
+import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Screens/AddExpenseScreen.dart';
 import 'package:expensetracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<StorageProvider>().fetchExpenses();
+    });
+  }
+
+  String getCurrentPeriod() {
+    final now = DateTime.now();
+    const months = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+    return "${months[now.month - 1]} ${now.year}";
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String getCurrentPeriod() {
-      final now = DateTime.now();
+    final storageProvider = context.watch<StorageProvider>();
 
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-
-      return "${months[now.month - 1]} ${now.year}";
-    }
+    final totalSpending = storageProvider.expenses.fold<double>(
+      0,
+      (sum, e) => sum + (e['amount'] as double),
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
+
+      // ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: Colors.grey.shade200,
+        elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 14),
           child: CircleAvatar(
-            radius: 40,
             backgroundColor: Colors.white,
-            child: Icon(
-              Icons.calendar_month_sharp,
-              color: Colors.blueAccent,
-              size: 25,
-            ),
+            child: const Icon(Icons.calendar_month, color: Colors.blue),
           ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Current Period",
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             Text(
               getCurrentPeriod(),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Row(
-              children: [
-                Icon(Icons.settings, size: 27),
-                IconButton(onPressed: (){
-                  context.read<Authprovider>().logOut();
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
-                }, icon: Icon(Icons.logout_rounded))
-              ],
-            ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: () {
+              context.read<Authprovider>().logOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const Loginscreen()),
+              );
+            },
           ),
         ],
       ),
+
+      // ================= BODY =================
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.all(28.0),
+          padding: const EdgeInsets.all(28),
           child: Column(
             children: [
+
+              // ================= TOTAL SPENDING CARD =================
               Container(
-                // height: 160,
+                padding: const EdgeInsets.all(23),
                 decoration: BoxDecoration(
                   color: Colors.blue.shade600,
-                  borderRadius: BorderRadius.circular(16)
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(23.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Total Spending",style: TextStyle(
-                            color: Colors.grey.shade200,
-                            fontSize: 15
-                          ),),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade300,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 2,horizontal: 9),
-                            child: Text("+2.4",style: TextStyle(
-                              color: Colors.white
-                            ),),
-                          )
-                        ],
-                      ),
-                      Text("\$ 1240.50",style: TextStyle(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Total Spending",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "₹ ${totalSpending.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 36,
                         color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 40
-                      ),),
-                      SizedBox(height: 10,),
-                      BudgetProgressBar(percent: 0.4),
-                      // SizedBox(height: 10,)
-                    ],
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Progress bar
+                    Stack(
+                      children: [
+                        Container(
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        Container(
+                          height: 6,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 30,),
+
+              const SizedBox(height: 30),
+
+              // ================= ACTION BUTTONS =================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
+                  _ActionBox(
+                    title: "Add",
+                    icon: Icons.add,
+                    color: Colors.blue,
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddExpenseScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AddExpenseScreen(),
+                        ),
+                      );
                     },
-                    child: ActivityContainer(title: 'Add', icon: Icons.add, shadeColor: Colors.blue, IconColor:Colors.white ,)),
-                  ActivityContainer(title: 'Reports', icon: Icons.align_horizontal_left_outlined, shadeColor: Colors.grey.shade300, IconColor:Colors.grey.shade800 ,),
-                  ActivityContainer(title: 'Budget', icon: Icons.wallet_rounded, shadeColor: Colors.teal, IconColor:Colors.white ,),
+                  ),
+                  _ActionBox(
+                    title: "Reports",
+                    icon: Icons.bar_chart,
+                    color: Colors.grey.shade300,
+                  ),
+                  _ActionBox(
+                    title: "Budget",
+                    icon: Icons.wallet,
+                    color: Colors.teal,
+                  ),
                 ],
               ),
-              SizedBox(height: 22,),
+
+              const SizedBox(height: 22),
+
+              // ================= RECENT HEADER =================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Recent Activity",style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18
-                  ),),
-                  Text("See All",style: TextStyle(
-                    color: Colors.blue.shade600,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
-                  ),)
+                children: const [
+                  Text(
+                    "Recent Activity",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    "See All",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(height: 13,),
-              RecentActivityContainer(title: 'Whole Food Market', date: 'Oct 23', category: 'Fast Food', price: '-\$54.70', icon: Icons.fastfood_rounded, color: Colors.deepOrange,),
-              RecentActivityContainer(title: 'Charger Cable', date: 'Oct 23', category: 'Electronics', price: '-\$23.10', icon: Icons.charging_station_rounded, color: Colors.teal,),
-              RecentActivityContainer(title: 'Uber Ride', date: 'Oct 22', category: 'Transport', price: '-\$12.50', icon: Icons.car_crash_rounded, color: Colors.grey,),
-              RecentActivityContainer(title: 'Spotify Premium', date: 'Oct 21', category: 'Entertainment', price: '-\$9.99', icon: Icons.music_note, color: Colors.blue,),
-              RecentActivityContainer(title: 'Salary Deposit', date: 'Oct 17', category: 'Income', price: '+\$30000', icon: Icons.candlestick_chart_rounded, color: Colors.green,),
+
+              const SizedBox(height: 12),
+
+              // ================= EXPENSE LIST =================
+              if (storageProvider.expenses.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: Text(
+                    "No expenses added yet",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                )
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: storageProvider.expenses.length,
+                  itemBuilder: (context, index) {
+                    final e = storageProvider.expenses[index];
+
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue.shade100,
+                        child: const Icon(Icons.receipt_long, color: Colors.blue),
+                      ),
+                      title: Text(
+                        e['title'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      subtitle: Text("${e['date']}  •  ${e['category']}"),
+                      trailing: Text(
+                        "-₹${e['amount']}",
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
         ),
@@ -164,162 +245,43 @@ class Dashboard extends StatelessWidget {
   }
 }
 
-class RecentActivityContainer extends StatelessWidget {
+// ================= ACTION BOX WIDGET =================
+class _ActionBox extends StatelessWidget {
   final String title;
-  final String date;
-  final String category;
-  final String price;
   final IconData icon;
-  final MaterialColor color;
-  const RecentActivityContainer({
-    super.key, required this.title, required this.date, required this.category, required this.price, required this.icon, required this.color,
+  final Color color;
+  final VoidCallback? onTap;
+
+  const _ActionBox({
+    required this.title,
+    required this.icon,
+    required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        // height: 100,
+        height: 120,
+        width: 100,
         decoration: BoxDecoration(
-          
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 1),
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-            leading: CircleAvatar(
-              radius: 22,
-              backgroundColor: color.shade100,
-              child: Icon(icon,color: color.shade600,size: 21,),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              backgroundColor: color,
+              child: Icon(icon, color: Colors.white),
             ),
-            title: Text(title,style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 17
-            ),),
-            subtitle: Row(
-              children: [
-                Text(date,style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14
-                ),),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Icon(Icons.circle,size: 7,color: Colors.grey,),
-                ),
-                Text(category,style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14
-                ),),
-              ],
-            ),
-            trailing: Text(price,style: TextStyle(
-              fontSize: 17,
-              color: Colors.black,
-              fontWeight: FontWeight.w900
-            ),),
-          ),
+            const SizedBox(height: 10),
+            Text(title),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class ActivityContainer extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Color shadeColor;
-  final Color IconColor;
-  const ActivityContainer({
-    super.key, required this.title, required this.icon, required this.shadeColor, required this.IconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 130,
-      width: 108,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12)
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundColor: shadeColor,
-            child: Icon(icon,color:IconColor,size: icon==Icons.add ? 30 : 25,),
-          ),
-          SizedBox(height: 15,),
-          Text(title,style: TextStyle(
-            fontSize: 16
-          ),)
-        ],
-      ),
-    );
-  }
-}
-
-class BudgetProgressBar extends StatelessWidget {
-  final double percent; 
-  final String label;
-  final Color backgroundColor;
-  final Color fillColor;
-
-  const BudgetProgressBar({
-    super.key,
-    required this.percent,
-    this.label = "of budget",
-    this.backgroundColor = Colors.white30,
-    this.fillColor = Colors.white,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
-                children: [
-                  // Background bar
-                  Container(
-                    height: 6,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-
-                  // Filled bar
-                  Container(
-                    height: 6,
-                    width: constraints.maxWidth * percent.clamp(0.0, 1.0),
-                    decoration: BoxDecoration(
-                      color: fillColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        Text(
-          "${(percent * 100).toInt()}% $label",
-          style: TextStyle(
-            color: fillColor.withOpacity(0.9),
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
     );
   }
 }

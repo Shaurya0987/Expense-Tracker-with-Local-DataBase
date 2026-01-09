@@ -1,4 +1,4 @@
-import 'package:expensetracker/Local DataBase/Database.dart';
+import 'package:expensetracker/Local%20DataBase/AuthDB.dart';
 import 'package:flutter/material.dart';
 
 class Authprovider extends ChangeNotifier {

@@ -1,3 +1,4 @@
+import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,18 +19,28 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   ];
 
   String getTodayDate() {
-  final now = DateTime.now();
-  const months = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
-  ];
+    final now = DateTime.now();
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
-  return "Today, ${months[now.month-1]} ${now.day}";
-}
-
+    return "Today, ${months[now.month - 1]} ${now.day}";
+  }
 
   final TextEditingController amountController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
 
   @override
   void dispose() {
@@ -111,9 +122,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       ),
                       decoration: const InputDecoration(
                         hintText: "0.00",
-                        hintStyle: TextStyle(
-                          fontSize: 45
-                        ),
+                        hintStyle: TextStyle(fontSize: 45),
                         border: InputBorder.none,
                       ),
                     ),
@@ -142,7 +151,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       contentPadding: EdgeInsets.zero,
                       leading: const Icon(Icons.edit, color: Colors.blue),
                       title: const Text(
-                        "Description",
+                        "Title",
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 14,
@@ -214,7 +223,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         scrollDirection: Axis.horizontal,
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
-                          final isSelected = categoryProvider.selectedIndex == index;
+                          final isSelected =
+                              categoryProvider.selectedIndex == index;
 
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -278,9 +288,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      subtitle: const Padding(
+                      subtitle: Padding(
                         padding: EdgeInsets.only(top: 4),
                         child: TextField(
+                          controller: noteController,
                           decoration: InputDecoration(
                             hintText: "Add details...",
                             border: InputBorder.none,
@@ -303,15 +314,37 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {
-                  final selectedCategory =
+                onPressed: () async {
+                  final title = descriptionController.text.trim();
+                  final note = noteController.text.trim();
+                  final date = getTodayDate();
+                  final category =
                       categories[categoryProvider.selectedIndex]["name"];
-                  debugPrint("Selected category: $selectedCategory");
+                  final amount = double.tryParse(amountController.text);
+
+                  if (amount == null || title.isEmpty || category.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please fill all the fields"),
+                      ),
+                    );
+                    return;
+                  }
+
+                  await context.read<StorageProvider>().saveExpense(
+                    title,
+                    date,
+                    note,
+                    category,
+                    amount,
+                  );
+
+                  Navigator.pop(context); // go back after save
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    Icon(Icons.check, color: Colors.white, grade: 400,size: 23,),
+                    Icon(Icons.check, color: Colors.white, size: 23),
                     SizedBox(width: 10),
                     Text(
                       "Save Expense",
