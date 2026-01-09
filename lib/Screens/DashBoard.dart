@@ -212,7 +212,7 @@ class _DashboardState extends State<Dashboard> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: storageProvider.expenses.length,
                   itemBuilder: (context, index) {
-                    final e = storageProvider.expenses[index];
+                    final expense = storageProvider.expenses[index];
 
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -221,14 +221,14 @@ class _DashboardState extends State<Dashboard> {
                         child: const Icon(Icons.receipt_long, color: Colors.blue),
                       ),
                       title: Text(
-                        e['title'],
+                        expense['title'],
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      subtitle: Text("${e['date']}  •  ${e['category']}"),
+                      subtitle: Text("${expense['date']}  •  ${expense['category']}"),
                       trailing: Text(
-                        "-₹${e['amount']}",
+                        "-₹${expense['amount']}",
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w900,
