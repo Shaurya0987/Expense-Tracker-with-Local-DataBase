@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:expensetracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:expensetracker/Screens/BottomNavigationBar.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
