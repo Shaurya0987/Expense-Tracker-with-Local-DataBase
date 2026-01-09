@@ -34,8 +34,7 @@ class DBHelper {
   }
 
   // SIGN UP → insert user
-  static Future<void> insertUser(
-      String name, String email, String password) async {
+  static Future<void> insertUser(String name, String email, String password) async {
     final db = await database;
 
     await db.insert(
@@ -50,8 +49,7 @@ class DBHelper {
   }
 
   // LOGIN → check email & password
-  static Future<Map<String, dynamic>?> loginUser(
-      String email, String password) async {
+  static Future<Map<String, dynamic>?> loginUser(String email, String password) async {
     final db = await database;
 
     final result = await db.query(

@@ -1,5 +1,8 @@
+import 'package:expensetracker/Providers/AuthProvider.dart';
+import 'package:expensetracker/Screens/BottomNavigationBar.dart';
 import 'package:expensetracker/Screens/SignInScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -9,20 +12,20 @@ class Loginscreen extends StatefulWidget {
 }
 
 class _LoginscreenState extends State<Loginscreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<Authprovider>();
+
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(28.0),
+        padding: const EdgeInsets.all(28),
         child: Column(
           children: [
-            // 🔹 Top spacing
             const Spacer(flex: 2),
 
-            // 🔹 Main content (center)
             Column(
               children: [
                 Container(
@@ -45,102 +48,89 @@ class _LoginscreenState extends State<Loginscreen> {
                     size: 40,
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Expense Tracker",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Welcome back! Please Login to Continue",
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 40),
 
-                // 🔹 Form
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Email Address"),
-                    const SizedBox(height: 7),
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.email),
-                        hintText: "hello@gmail.com",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text("Password"),
-                    const SizedBox(height: 7),
-                    TextField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        hintText: "af\$3532r@1!",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
+                const Text("Email Address"),
+                const SizedBox(height: 7),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                const Text("Password"),
+                const SizedBox(height: 7),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 35),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final email = emailController.text.trim();
+                      final password = passwordController.text.trim();
+
+                      if (email.isEmpty || password.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Fill all details"),
                           ),
-                        ),
-                        onPressed: () {},
-                        child: const Text(
-                          "Log In",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
+                        );
+                        return;
+                      }
+
+                      final success =
+                          await authProvider.login(email, password);
+
+                      if (success) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const BottomNavigationScreens(),
                           ),
-                        ),
-                      ),
-                    ),
-                  ],
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text("Invalid email or password"),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text("Log In"),
+                  ),
                 ),
               ],
             ),
 
-            // 🔹 Push bottom text down
             const Spacer(flex: 2),
 
-            // 🔹 Bottom centered text
             GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>SignInScreen()));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SignInScreen(),
+                  ),
+                );
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account? ",
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                  Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      color: Colors.blue.shade600,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.blue,
-                      decorationThickness: 1.6,
-                    ),
-                  ),
-                ],
+              child: const Text(
+                "Don't have an account? Sign Up",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ],

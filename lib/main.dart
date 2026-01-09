@@ -1,10 +1,6 @@
 import 'package:expensetracker/Providers/AuthProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:expensetracker/Screens/BottomNavigationBar.dart';
-import 'package:expensetracker/Screens/ExpenseScreen.dart';
-import 'package:expensetracker/Screens/LoginScreen.dart';
-import 'package:expensetracker/Screens/SignInScreen.dart';
-import 'package:expensetracker/Screens/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SignInScreen(),
+      home:BottomNavigationScreens(),
     );
   }
 }

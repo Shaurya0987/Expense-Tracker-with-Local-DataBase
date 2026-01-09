@@ -1,4 +1,8 @@
+import 'package:expensetracker/Providers/AuthProvider.dart';
+import 'package:expensetracker/Screens/AddExpenseScreen.dart';
+import 'package:expensetracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -58,7 +62,15 @@ class Dashboard extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20),
-            child: Icon(Icons.settings, size: 27),
+            child: Row(
+              children: [
+                Icon(Icons.settings, size: 27),
+                IconButton(onPressed: (){
+                  context.read<Authprovider>().logOut();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
+                }, icon: Icon(Icons.logout_rounded))
+              ],
+            ),
           ),
         ],
       ),
@@ -114,7 +126,11 @@ class Dashboard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ActivityContainer(title: 'Add', icon: Icons.add, shadeColor: Colors.blue, IconColor:Colors.white ,),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddExpenseScreen()));
+                    },
+                    child: ActivityContainer(title: 'Add', icon: Icons.add, shadeColor: Colors.blue, IconColor:Colors.white ,)),
                   ActivityContainer(title: 'Reports', icon: Icons.align_horizontal_left_outlined, shadeColor: Colors.grey.shade300, IconColor:Colors.grey.shade800 ,),
                   ActivityContainer(title: 'Budget', icon: Icons.wallet_rounded, shadeColor: Colors.teal, IconColor:Colors.white ,),
                 ],

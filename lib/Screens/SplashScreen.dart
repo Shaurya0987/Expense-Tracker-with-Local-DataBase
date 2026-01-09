@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:expensetracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/Screens/BottomNavigationBar.dart';
 
@@ -17,7 +18,7 @@ class _SplashscreenState extends State<Splashscreen> {
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const BottomNavigationScreens()),
+        MaterialPageRoute(builder: (_) => const Loginscreen()),
       );
     });
   }

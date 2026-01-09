@@ -1,5 +1,7 @@
+import 'package:expensetracker/Providers/AuthProvider.dart';
 import 'package:expensetracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -9,25 +11,28 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<Authprovider>();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(28.0),
+          padding: const EdgeInsets.all(28),
           child: Column(
             children: [
               const SizedBox(height: 40),
 
-              // 🔹 Header
+              // Header
               Column(
                 children: [
                   Container(
@@ -65,11 +70,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       color: Colors.grey.shade600,
                       fontSize: 17,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
 
-                  // 🔹 Form
+                  // Form
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -79,7 +83,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: nameController,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
-                          hintText: "John Doe",
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -91,7 +94,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: emailController,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.email),
-                          hintText: "hello@gmail.com",
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -109,7 +111,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               isPasswordVisible
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: Colors.grey,
                             ),
                             onPressed: () {
                               setState(() {
@@ -117,7 +118,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               });
                             },
                           ),
-                          hintText: "af\$3532r@1!",
                           border: const OutlineInputBorder(),
                         ),
                       ),
@@ -135,7 +135,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               isConfirmPasswordVisible
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: Colors.grey,
                             ),
                             onPressed: () {
                               setState(() {
@@ -144,7 +143,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               });
                             },
                           ),
-                          hintText: "af\$3532r@!",
                           border: const OutlineInputBorder(),
                         ),
                       ),
@@ -153,55 +151,69 @@ class _SignInScreenState extends State<SignInScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          onPressed: () {},
-                          child: const Text(
-                            "Create Account",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 19,
-                            ),
-                          ),
+                          onPressed: () async {
+                            final name = nameController.text.trim();
+                            final email = emailController.text.trim();
+                            final password = passwordController.text.trim();
+                            final confirmPassword =
+                                confirmPasswordController.text.trim();
+
+                            if (name.isEmpty ||
+                                email.isEmpty ||
+                                password.isEmpty ||
+                                confirmPassword.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Fill all details"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (password != confirmPassword) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Passwords do not match"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final success = await authProvider.signUp(
+                              name,
+                              email,
+                              password,
+                            );
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Account created successfully"),
+                                ),
+                              );
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const Loginscreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Email already exists"),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text("Sign In"),
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
-
-              const SizedBox(height: 30),
-
-              // 🔹 Bottom text
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Already have an account? ",
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                  TextButton(
-                    onPressed: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
-                    },
-                    child: Text(
-                      "Log In",
-                      style: TextStyle(
-                        color: Colors.blue.shade600,
-                        decoration: TextDecoration.underline,
-                        decorationThickness: 1.6,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
