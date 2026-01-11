@@ -2,6 +2,7 @@ import 'package:expensetracker/Providers/AuthProvider.dart';
 import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:expensetracker/Screens/BottomNavigationBar.dart';
+import 'package:expensetracker/Screens/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:BottomNavigationScreens(),
+      home:Splashscreen(),
     );
   }
 }
