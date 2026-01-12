@@ -3,6 +3,8 @@ import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
 import 'package:expensetracker/Screens/BottomNavigationBar.dart';
 import 'package:expensetracker/Screens/SplashScreen.dart';
+import 'package:expensetracker/Screens/VisaCardScreen.dart';
+import 'package:expensetracker/utils/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,9 +26,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Expense Tracker With Local DataBase',
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.light,
+        primaryColor: AppColors.bgColor
       ),
-      home:Splashscreen(),
+      home:VisaCard(),
     );
   }
 }
