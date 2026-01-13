@@ -1,7 +1,6 @@
 import 'package:expensetracker/Providers/AuthProvider.dart';
 import 'package:expensetracker/Providers/CRUDProvider.dart';
 import 'package:expensetracker/Providers/CategoriesProvider.dart';
-import 'package:expensetracker/Screens/SplashScreen.dart';
 import 'package:expensetracker/Screens/VisaCardScreen.dart';
 import 'package:expensetracker/utils/Colors.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primaryColor: AppColors.bgColor
       ),
-      home:Splashscreen(),
+      home:VisaCard(),
     );
   }
 }
